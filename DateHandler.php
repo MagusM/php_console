@@ -69,10 +69,15 @@ class DateHandler
 
     public function setYear($year = null)
     {
-        if (is_null($year)) {
+        if (empty($year)) {
             $this->year = date("Y");
         } else {
             $this->year = $year;
         }
+    }
+
+    public function getYear()
+    {
+        return $this->year;
     }
 }
