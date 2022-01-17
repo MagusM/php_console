@@ -9,15 +9,15 @@ class SalaryDateUtil
 {
     public function generate($fileName = null, $year = null)
     {
-        @$dateHandler = new DateHandler($year);
+        $dateHandler = new DateHandler();
+        $dateHandler->setYear($year);
+        $dateHandler->calcLastBasePayDay();
+        $dateHandler->calcLastBonusPayDay();
+
         //CsvHandler
 
         //file
     }
 }
 
-
-#this is the change !!
-
-
-#this is more change !!
+// $obj = new SalaryDateUtil();
