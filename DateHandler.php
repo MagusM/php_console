@@ -6,31 +6,35 @@ class DateHandler
     /**
      * @var array | 0->day as a number, 1->day name
      */
-    private $lastBasePayDay;
+    public $lastBasePayDay;
 
     /**
      * @var array | 0->day as a number, 1->day name
      */
-    private $lastBonusPayDay;
+    public $lastBonusPayDay;
 
     /**
      * @var int | year
      */
-    public $year;
+    private $year;
 
-    function __construct($year = null)
+    public function calcLastBasePayDay()
     {
-        if (is_null($year)) {
-            $this->year = date("Y");
-        } else {
-            $this->year = $year;
-        }
-
         $this->lastBasePayDay = $this->calcPayDay();
+    }
+
+    public function calcLastBonusPayDay()
+    {
         $this->lastBonusPayDay = $this->calcPayDay(true);
     }
 
-    public function calcPayDay($isBonus = false)
+    /**
+     * @var bool
+     * 
+     * if false -> return calc of end of month
+     * if true -> return calc of bonus
+     */
+    private function calcPayDay($isBonus = false)
     {
         $arrayToReturn = array();
 
@@ -49,9 +53,7 @@ class DateHandler
             $dayNum = $day;
         }
 
-        $timestamp = sprintf("%s-%s-%s", $this->year, $month, $dayNum);
-
-        @$dayName = date('D', strtotime($timestamp));
+        @$dayName = date('D', strtotime(sprintf("%s-%s-%s", $this->year, $month, $dayNum)));
         switch ($dayName) {
             case "Sat":
                 $dayNum -= 2;
@@ -60,10 +62,18 @@ class DateHandler
                 $dayNum -= 1;
                 break;
         }
-        @$dayName = date('D', strtotime($timestamp));
-
+        @$dayName = date('D', strtotime(sprintf("%s-%s-%s", $this->year, $month, $dayNum)));
 
         return array($dayNum, $dayName);
+    }
+
+    public function setYear($year = null)
+    {
+        if (empty($year)) {
+            $this->year = date("Y");
+        } else {
+            $this->year = $year;
+        }
     }
 
     public function getYear()
