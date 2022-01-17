@@ -8,12 +8,22 @@ include("CsvHandler.php");
 
 class SalaryDateUtil
 {
+
+
+    public $salaryDates;
+    public $bonusDates;
+
+    //TODO: expose $csvHandler->getCSVHeaders() in a function to index.php
+
     public function generate($fileName = null, $year = null)
     {
         $dateHandler = new DateHandler();
         $dateHandler->setYear($year);
         $dateHandler->calcLastBasePayDay();
         $dateHandler->calcLastBonusPayDay();
+
+        $this->salaryDates = $dateHandler->lastBasePayDay;
+        $this->bonusDates = $dateHandler->lastBonusPayDay;
 
         //CsvHandler
         $csvHandler = new CsvHandler(
@@ -25,22 +35,24 @@ class SalaryDateUtil
         if (!$filePointer) {
             exit("Failed to create file");
         }
-        print_r('file created');
         fputcsv($filePointer, $csvHandler->getCSVHeaders());
         for ($i = 1; $i < 13; $i++) {
             $array = [
-                DateTime::createFromFormat("!m", $i)->format('F'),
-                $dateHandler->lastBasePayDay[$i][0] . "/" . $dateHandler->lastBasePayDay[$i][1],
-                $dateHandler->lastBonusPayDay[$i][0] . "/" . $dateHandler->lastBonusPayDay[$i][1]
+                $i,
+                $dateHandler->lastBasePayDay[$i][1] . ", " . $dateHandler->lastBasePayDay[$i][0],
+                $dateHandler->lastBonusPayDay[$i][1] . ", " . $dateHandler->lastBasePayDay[$i][0]
             ];
             fputcsv($filePointer, $array);
         }
     }
 }
 
-$salaryDateUtil = new SalaryDateUtil();
-try {
-    $salaryDateUtil->generate(null, 2020);
-} catch (Exception $e) {
-    print_r('please enter file name in string');
-}
+
+
+
+// $salaryDateUtil = new SalaryDateUtil();
+// try {
+//     $salaryDateUtil->generate(null, 2020);
+// } catch (Exception $e) {
+//     print_r('please enter file name in string');
+// }
